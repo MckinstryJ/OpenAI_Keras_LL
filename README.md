@@ -1,13 +1,15 @@
-# Deep Reinforcement Learning in Keras
+# Applied Reinforcement Learning in Keras (if needed)
 
-Modular Implementation of popular Deep Reinforcement Learning algorithms in Keras:
+Modular Implementation of all known Reinforcement Learning algorithms in Keras (if needed):
 
-- [x] Synchronous N-step Advantage Actor Critic ([A2C](https://github.com/germain-hug/Advanced-Deep-RL-Keras#n-step-advantage-actor-critic-a2c))
-- [x] Asynchronous N-step Advantage Actor-Critic ([A3C](https://github.com/germain-hug/Advanced-Deep-RL-Keras#n-step-asynchronous-advantage-actor-critic-a3c))
-- [x] Deep Deterministic Policy Gradient with Parameter Noise ([DDPG](https://github.com/germain-hug/Advanced-Deep-RL-Keras#deep-deterministic-policy-gradient-ddpg))
-- [x] Double Deep Q-Network ([DDQN](https://github.com/germain-hug/Advanced-Deep-RL-Keras#double-deep-q-network-ddqn))
-- [x] Double Deep Q-Network with Prioritized Experience Replay  ([DDQN + PER](https://github.com/germain-hug/Advanced-Deep-RL-Keras#))
-- [x] Dueling DDQN ([D3QN](https://github.com/germain-hug/Advanced-Deep-RL-Keras#dueling-double-deep-q-network-dueling-ddqn))
+- [x] Q Learning ([AC](https://github.com/MckinstryJ/OpenAI_RL#q-learning))
+- [x] Actor Critic ([AC](https://github.com/MckinstryJ/OpenAI_RL#actor-critic))
+- [x] Synchronous N-step Advantage Actor Critic ([A2C](https://github.com/MckinstryJ/OpenAI_RL#n-step-advantage-actor-critic-a2c))
+- [x] Asynchronous N-step Advantage Actor-Critic ([A3C](https://github.com/MckinstryJ/OpenAI_RL#n-step-asynchronous-advantage-actor-critic-a3c))
+- [x] Deep Deterministic Policy Gradient with Parameter Noise ([DDPG](https://github.com/MckinstryJ/OpenAI_RL#deep-deterministic-policy-gradient-ddpg))
+- [x] Double Deep Q-Network ([DDQN](https://github.com/MckinstryJ/OpenAI_RL#double-deep-q-network-ddqn))
+- [x] Double Deep Q-Network with Prioritized Experience Replay  ([DDQN + PER](https://github.com/MckinstryJ/OpenAI_RL#double-deep-q-network-ddqn))
+- [x] Dueling DDQN ([D3QN](https://github.com/MckinstryJ/OpenAI_RL#dueling-double-deep-q-network-dueling-ddqn))
 
 ## Getting Started
 
@@ -16,7 +18,29 @@ This implementation requires keras 2.1.6, as well as OpenAI gym.
 $ pip install gym keras==2.1.6
 ```
 
+# Tabular Algorithms
+### Q Learning (QL)
+...
+
+### SARSA (SARSA)
+...
+
+### Dynamic Q Learning (DynaQ)
+...
+
+### Explicit Explore Exploit (E3)
+...
+
+### Delay Q Learning (DelayQ)
+...
+
+### Double Q Learning (DoubleQ)
+...
+
 # Actor-Critic Algorithms
+### Actor Critic (AC)
+...
+
 ### N-step Advantage Actor Critic (A2C)
 The Actor-Critic algorithm is a model-free, off-policy method where the critic acts as a value-function approximator, and the actor as a policy-function approximator. When training, the critic predicts the TD-Error and guides the learning of both itself and the actor. In practice, we approximate the TD-Error using the Advantage function. For more stability, we use a shared computational backbone across both networks, as well as an N-step formulation of the discounted rewards. We also incorporate an entropy regularization term ("soft" learning) to encourage exploration. While A2C is simple and efficient, running it on Atari Games quickly becomes intractable due to long computation time.
 
@@ -34,12 +58,6 @@ $ python3 main.py --type A3C --env CartPole-v1 --nb_episodes 10000 --n_threads 1
 $ python3 main.py --type A3C --env BreakoutNoFrameskip-v4 --is_atari --nb_episodes 10000 --n_threads 16
 $ python3 main.py --type DDPG --env LunarLanderContinuous-v2
 ```
-
-<br />
-<div align="center">
-<img width="40%" src ="https://github.com/germain-hug/Advanced-Deep-RL-Keras/blob/master/results/a2c.png?raw=true" />
-<img width="40%" src ="https://github.com/germain-hug/Advanced-Deep-RL-Keras/blob/master/results/ddpg.png?raw=true" /></div>  
-<br />
 
 # Deep Q-Learning Algorithms
 ### Double Deep Q-Network (DDQN)
@@ -79,7 +97,11 @@ $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64 --dueling
 | --n_threads     | Number of threads (A3C)       | 16 (default)      |
 | --gather_stats     | Whether to compute stats of scores averaged over 10 games (slow, see below)       | -      |
 | --render     | Whether to render the environment as it is training       | -      |
-| --gpu     | GPU index       | 0      |
+| --gpu     | GPU index (0)       | -      |
+| --plus     | Adds Priority for DynaQ       | -      |
+| --clipped     | Convert Reward to -100 or 100       | -      |
+| --hallucinations     | Number of inexpensive revisits       | 1000 (default)      |
+| --plot     | Live Plot visualization       | -      |
 
 # Visualization & Monitoring
 
@@ -107,11 +129,15 @@ Finally, to plot the results, run:
 python3 utils/plot_results.py <path_to_your_log_file>
 ```
 
+#### Live Plot Visual
+When training with the argument `--plot`, a live plot visual will appear besides the render screen. To use this feature you must have `--render` as part of your arguments. The plots are similar to what you might find in results folder. The plot is updated at every 1/10 episodes.
+
 # Acknowledgments
 
 - Atari Environment Helper Class template by [@ShanHaoYu](https://github.com/ShanHaoYu/Deep-Q-Network-Breakout/blob/master/environment.py)
 - Atari Environment Wrappers by [OpenAI](github.com/openai/baselines/blob/master/baselines/common/atari_wrappers.py)
 - SumTree Helper Class by [@jaara](https://github.com/jaara/AI-blog/blob/master/SumTree.py)
+- Germain and Crew for the base code [@Germain](https://github.com/germain-hug/Advanced-Deep-RL-Keras)
 
 # References (Papers)
 
