@@ -2,11 +2,18 @@
 
 Modular Implementation of all known Reinforcement Learning algorithms in Keras (if needed):
 
-- [x] Q Learning ([AC](https://github.com/MckinstryJ/OpenAI_RL#q-learning))
+- [x] Q Learning ([QL](https://github.com/MckinstryJ/OpenAI_RL#q-learning-ql))
+- [x] State Action Reward State Action ([SARSA](https://github.com/MckinstryJ/OpenAI_RL#state-action-reward-state-action-sarsa))
+- [x] Dynamic Q Learning ([DynaQ](https://github.com/MckinstryJ/OpenAI_RL#dynamic-q-learning-dynaq))
+- [x] Dynamic Q Learning Plus ([DynaQ+](https://github.com/MckinstryJ/OpenAI_RL#dynamic-q-learning-dynaq))
+- [x] Explicit Explore Exploit ([E3](https://github.com/MckinstryJ/OpenAI_RL#explicit-explore-exploit-e3))
+- [x] Delayed Q Learning ([DelayQ](https://github.com/MckinstryJ/OpenAI_RL#delay-q-learning-delayq))
+- [x] Double Q Learning ([DoubleQ](https://github.com/MckinstryJ/OpenAI_RL#double-q-learning-double-q))
 - [x] Actor Critic ([AC](https://github.com/MckinstryJ/OpenAI_RL#actor-critic))
 - [x] Synchronous N-step Advantage Actor Critic ([A2C](https://github.com/MckinstryJ/OpenAI_RL#n-step-advantage-actor-critic-a2c))
 - [x] Asynchronous N-step Advantage Actor-Critic ([A3C](https://github.com/MckinstryJ/OpenAI_RL#n-step-asynchronous-advantage-actor-critic-a3c))
 - [x] Deep Deterministic Policy Gradient with Parameter Noise ([DDPG](https://github.com/MckinstryJ/OpenAI_RL#deep-deterministic-policy-gradient-ddpg))
+- [x] Deep Q Network ([DQN](https://github.com/MckinstryJ/OpenAI_RL#deep-q-network-dqn))
 - [x] Double Deep Q-Network ([DDQN](https://github.com/MckinstryJ/OpenAI_RL#double-deep-q-network-ddqn))
 - [x] Double Deep Q-Network with Prioritized Experience Replay  ([DDQN + PER](https://github.com/MckinstryJ/OpenAI_RL#double-deep-q-network-ddqn))
 - [x] Dueling DDQN ([D3QN](https://github.com/MckinstryJ/OpenAI_RL#dueling-double-deep-q-network-dueling-ddqn))
@@ -22,7 +29,7 @@ $ pip install gym keras==2.1.6
 ### Q Learning (QL)
 ...
 
-### SARSA (SARSA)
+### State Action Reward State Action (SARSA)
 ...
 
 ### Dynamic Q Learning (DynaQ)
@@ -60,6 +67,9 @@ $ python3 main.py --type DDPG --env LunarLanderContinuous-v2
 ```
 
 # Deep Q-Learning Algorithms
+### Deep Q Network (DQN)
+...
+
 ### Double Deep Q-Network (DDQN)
 The DQN algorithm is a Q-learning algorithm, which uses a Deep Neural Network as a Q-value function approximator. We estimate target Q-values by leveraging the Bellman equation, and gather experience through an epsilon-greedy policy. For more stability, we sample past experiences randomly (Experience Replay). A variant of the DQN algorithm is the Double-DQN (or DDQN). For a more accurate estimation of our Q-values, we use a second network to temper the overestimations of the Q-values by the original network. This _target_ network is updated at a slower rate Tau, at every training step.
 
@@ -76,11 +86,6 @@ $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64
 $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64 --with_PER
 $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64 --dueling
 ```
-
-<br />
-<div align="center">
-<img width="60%" src ="https://github.com/germain-hug/Advanced-Deep-RL-Keras/blob/master/results/ddqn.png?raw=true" /></div>  
-<br />
 
 ### Arguments
 
