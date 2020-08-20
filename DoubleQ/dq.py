@@ -71,7 +71,7 @@ class DOUBLEQ(object):
         results = []
         rewards, rew = [], [-200 for i in range(100)]
 
-        for epoch in range(args.nb_episodes + 1 + 4000):
+        for epoch in range(args.nb_episodes + 1):
             # Reset episode
             time, cumul_reward, done = 0, 0, False
             old_state = env.reset()

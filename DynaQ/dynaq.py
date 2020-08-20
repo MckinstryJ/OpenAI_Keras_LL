@@ -63,14 +63,17 @@ class DYNAQ(object):
         q_obs = self.continous_2_descrete(obs)
         q_next_obs = self.continous_2_descrete(next_obs)
 
-        q_obs[action] = (1 - self.lr) * q_obs[action] + self.lr * (reward + self.gamma * max(q_next_obs))
-
         if not halu:
+            q_obs[action] = (1 - self.lr) * q_obs[action] + self.lr * (
+                    reward + self.gamma * max(q_next_obs))
             self.M.append([action, obs, next_obs, reward, 0, True])
         elif halu and self.plus:
             bonus_reward = reward + self.k * np.sqrt(last)
             q_obs[action] = (1 - self.lr) * q_obs[action] + self.lr * (
                         bonus_reward + self.gamma * max(q_next_obs))
+        elif halu:
+            q_obs[action] = (1 - self.lr) * q_obs[action] + self.lr * (
+                        self.gamma * max(q_next_obs))
 
     def train(self, env, args):
         results = []
@@ -134,7 +137,8 @@ class DYNAQ(object):
                 s = round(np.average(rew[-100:]), 5)
                 print("Epoch - {} ---> Score - {}".format(epoch, s))
 
-        self.save_image()
+        if args.plot:
+            self.save_image()
 
         return results
 

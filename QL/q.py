@@ -108,7 +108,8 @@ class QL(object):
                 s = round(np.average(rew[-100:]), 5)
                 print("Epoch - {} ---> Score - {}".format(epoch, s))
 
-        self.save_image()
+        if args.plot:
+            self.save_image()
 
         return results
 

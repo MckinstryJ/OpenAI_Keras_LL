@@ -106,7 +106,7 @@ class DELAYQ(object):
                 if args.render and epoch % 100 == 0:
                     env.render()
                     if args.plot and time == 0:
-                        plt.title("QL - Running Reward")
+                        plt.title("Delay Q - Running Reward")
                         plt.ylabel("Reward")
                         plt.plot([np.average(rew[i:i + 100]) for i in range(len(rew) - 100)])
                         self.fig.canvas.draw()

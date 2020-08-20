@@ -152,7 +152,7 @@ def main(args=None):
         args.batch_size)
 
     if args.type in ["QL", "SARSA", "DynaQ", "DoubleQ",
-                     "DelayQ", "AC", "E3"]:
+                     "DelayQ", "E3"]:
         algo.save_tab()
     else:
         algo.save_weights(export_path)
