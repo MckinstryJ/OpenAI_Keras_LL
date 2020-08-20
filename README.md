@@ -27,65 +27,198 @@ $ pip install gym keras==2.1.6
 
 # Tabular Algorithms
 ### Q Learning (QL)
-...
+The Q Learning algorithm is a off-policy method that stores its state-action-rewards in a matrix. The states (for most) come in as continuous so to convert them to discrete numbers, which is used as the index in its reward matrix, the transformation is: 
+
+```python 
+int(value * 100) % self.groups
+``` 
+
+Where self.groups is the number of "bins". There is a major downside to this transformation, within a smaller grid, because the starting point could easily be seen as the ending point so the action an agent would take in the begining would be effected by what action is needed to gain the highest reward at the end. Still trying to figure out what would be better for these tabular based algorithms that isn't specific to one environment.
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type QL --env LunarLander-v2 --consecutive_frames 1 --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     --consecutive_frames 1      |          -273.138 |
 
 ### State Action Reward State Action (SARSA)
-...
+The SARSA algorithm is an on-policy method that also stores its state-action-rewards in a matrix. The difference between on-policy vs off-policy is whether or not the agent looks at the current policy to determine its discounted reward or some other method (i.e. greedy) 
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type SARSA --env LunarLander-v2 --consecutive_frames 1 --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     --consecutive_frames 1      |          -251.316 |
 
 ### Dynamic Q Learning (DynaQ)
-...
+The Dynamic Q Learning algorithm is an off-policy tabular method that introduces the idea of hallucinations. Before DynaQ, an agent would have to directly interact with the environment to gain insight on what it needs to do next. With hallucinations, however, the agent can revisit states to reinforce the action that produced the given reward.
+
+#### Dynamic Q Learning (Plus)
+The plus modification gives a bonus reward to any state that hasn't been revisited in a long time. The bonus is calculated as:
+```python
+reward + self.k * np.sqrt(last)
+```
+Where k is manually defined and last is the number of steps since it was last visited.
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type DynaQ --env LunarLander-v2 --consecutive_frames 1 --plot --render --plus
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     --consecutive_frames 1      |          -250.724 |
+| Lunar Lander v2         |     --consecutive_frames 1 --plus      |          -144.569 |
 
 ### Explicit Explore Exploit (E3)
-...
+The E3 algorithm is an off-policy tabular method where the agent will first perform "balanced-wandering" (each action has been selected the same amount) until all actions, in that state, have been selected N times. Once all actions have been selected N times, the state will move into a new list where the standard Q learning method applies. This gives the appearance of explicit exploration and explicit exploitation.
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type E3 --env LunarLander-v2 --consecutive_frames 1 --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     --consecutive_frames 1      |          -185.092 |
 
 ### Delay Q Learning (DelayQ)
-...
+The Delay Q Learning algorithm (aka PAC-MDP) is an off-policy method that acts greedy unless it considers an update based on whether or not the reinforced reward is:
+```python
+Q[s,a] - U[s,a] / m >= 2 * e
+```
+Where U is the table for attempted updates and e is a defined value which is the sample complexity of exploration. This is considered as a PAC-MDP because the sample complexity is of the algorithm is less than some polynomial (specified in its paper). 
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type DelayQ --env LunarLander-v2 --consecutive_frames 1 --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     --consecutive_frames 1      |          -127.451 |
 
 ### Double Q Learning (DoubleQ)
-...
+The Double Q Learning algorithm is an off-policy method that employs two reward tables. The update to one uses a discounted value from the other. More specifically, the update to each is:
+```python
+Qa[s,a] = Qa[s,a] + alpha * (reward + gamma * Qb[s',a] - Qa[s,a]
+```
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type DoubleQ --env LunarLander-v2 --consecutive_frames 1 --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     --consecutive_frames 1      |          -189.879 |
 
 # Actor-Critic Algorithms
 ### Actor Critic (AC)
-...
+The Actor-Critic algorithm is a model-free, off-policy method where the critic acts as a value-function approximator, and the actor as a policy-function approximator. When training, the critic predicts the TD-Error and guides the learning of both itself and the actor. 
+
+At the present, the AC model is training via CPU and will need to be adjusted to utilize the ```--gpu``` arg. Due to the use of the CPU, the model is very slow.
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type AC --env LunarLander-v2 --gpu --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     ---      |          --- |
 
 ### N-step Advantage Actor Critic (A2C)
-The Actor-Critic algorithm is a model-free, off-policy method where the critic acts as a value-function approximator, and the actor as a policy-function approximator. When training, the critic predicts the TD-Error and guides the learning of both itself and the actor. In practice, we approximate the TD-Error using the Advantage function. For more stability, we use a shared computational backbone across both networks, as well as an N-step formulation of the discounted rewards. We also incorporate an entropy regularization term ("soft" learning) to encourage exploration. While A2C is simple and efficient, running it on Atari Games quickly becomes intractable due to long computation time.
+The A2C algorithm approximates the TD-Error using the Advantage funciton. For more stability, we use a shared computational backbone across both networks, as well as an N-step formulation of the discounted rewards. We also incorporate an entropy regularization term ("soft" learning) to encourage exploration. While A2C is simple and efficient, running it on Atari Games quickly becomes intractable due to long computation time.
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type A2C --env LunarLander-v2 --gpu --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     ---      |          -116.524 |
 
 ### N-step Asynchronous Advantage Actor Critic (A3C)
 In a similar fashion as the A2C algorithm, the implementation of A3C incorporates asynchronous weight updates, allowing for much faster computation. We use multiple agents to perform gradient ascent asynchronously, over multiple threads. We test A3C on the Atari Breakout environment.
 
-### Deep Deterministic Policy Gradient (DDPG)
-The DDPG algorithm is a model-free, off-policy algorithm for continuous action spaces. Similarly to A2C, it is an actor-critic algorithm in which the actor is trained on a deterministic target policy, and the critic predicts Q-Values. In order to reduce variance and increase stability, we use experience replay and separate target networks. Moreover, as hinted by [OpenAI](https://blog.openai.com/better-exploration-with-parameter-noise/), we encourage exploration through parameter space noise (as opposed to traditional action space noise). We test DDPG on the Lunar Lander environment.
-
-### Running
-
+#### Running
+Running this algorithm with the full args is shown below:
 ```bash
-$ python3 main.py --type A2C --env CartPole-v1
-$ python3 main.py --type A3C --env CartPole-v1 --nb_episodes 10000 --n_threads 16
-$ python3 main.py --type A3C --env BreakoutNoFrameskip-v4 --is_atari --nb_episodes 10000 --n_threads 16
-$ python3 main.py --type DDPG --env LunarLanderContinuous-v2
+$ python3 main.py --type A3C --env LunarLander-v2 --gpu --plot --render
 ```
+
+You can use ```--render``` but, at this moment, it will render for every thread. Due to this, rendering the environment will slow down training.
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     ---      |          168.795 |
+
+### Deep Deterministic Policy Gradient (DDPG)
+The DDPG algorithm is a model-free, off-policy algorithm for continuous action spaces. Similarly to A2C, it is an actor-critic algorithm in which the actor is trained on a deterministic target policy, and the critic predicts Q-Values. In order to reduce variance and increase stability, we use experience replay and separate target networks. Moreover, as hinted by [OpenAI](https://blog.openai.com/better-exploration-with-parameter-noise/), we encourage exploration through parameter space noise (as opposed to traditional action space noise). 
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type DDPG --env LunarLander-v2 --gpu --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     ---      |          -382.363 |
 
 # Deep Q-Learning Algorithms
 ### Deep Q Network (DQN)
-...
+The DQN algorithm is a Q-learning algorithm, which uses a Deep Neural Network as a Q-value function approximator. We estimate target Q-values by leveraging the Bellman equation, and gather experience through an epsilon-greedy policy. For more stability, we sample past experiences randomly (Experience Replay).
 
 ### Double Deep Q-Network (DDQN)
-The DQN algorithm is a Q-learning algorithm, which uses a Deep Neural Network as a Q-value function approximator. We estimate target Q-values by leveraging the Bellman equation, and gather experience through an epsilon-greedy policy. For more stability, we sample past experiences randomly (Experience Replay). A variant of the DQN algorithm is the Double-DQN (or DDQN). For a more accurate estimation of our Q-values, we use a second network to temper the overestimations of the Q-values by the original network. This _target_ network is updated at a slower rate Tau, at every training step.
+A variant of the DQN algorithm is the Double-DQN (or DDQN). For a more accurate estimation of our Q-values, we use a second network to temper the overestimations of the Q-values by the original network. This _target_ network is updated at a slower rate Tau, at every training step.
 
-### Double Deep Q-Network with Prioritized Experience Replay (DDQN + PER)
+#### Double Deep Q-Network with Prioritized Experience Replay (DDQN + PER)
 We can further improve our DDQN algorithm by adding in Prioritized Experience Replay (PER), which aims at performing importance sampling on the gathered experience. The experience is ranked by its TD-Error, and stored in a SumTree structure, which allows efficient retrieval of the _(s, a, r, s')_ transitions with the highest error.
 
-### Dueling Double Deep Q-Network (Dueling DDQN)
+#### Dueling Double Deep Q-Network (Dueling DDQN)
 In the dueling variant of the DQN, we incorporate an intermediate layer in the Q-Network to estimate both the state value and the state-dependent advantage function. After reformulation (see [ref](https://arxiv.org/pdf/1511.06581.pdf)), it turns out we can express the estimated Q-Value as the state value, to which we add the advantage estimate and subtract its mean. This factorization of state-independent and state-dependent values helps disentangling learning across actions and yields better results.
 
-### Running
-
+#### Running
+Running the algorithm with full args is shown below:
 ```bash
 $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64
 $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64 --with_PER
 $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64 --dueling
 ```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     ---      |          245.02 |
+| Lunar Lander v2         |     --with_PER      |          --- |
+| Lunar Lander v2         |     --dueling      |          --- |
 
 ### Arguments
 
@@ -146,6 +279,7 @@ When training with the argument `--plot`, a live plot visual will appear besides
 
 # References (Papers)
 
+- [Delayed Q (PAC-MDP) (DelayQ)](http://cseweb.ucsd.edu/~ewiewior/06efficient.pdf)
 - [Advantage Actor Critic (A2C)](https://papers.nips.cc/paper/1786-actor-critic-algorithms.pdf)
 - [Asynchronous Advantage Actor Critic (A3C)](https://arxiv.org/pdf/1602.01783.pdf)
 - [Deep Deterministic Policy Gradient (DDPG)](http://proceedings.mlr.press/v32/silver14.pdf)
