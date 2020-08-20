@@ -217,8 +217,8 @@ $ python3 main.py --type DDQN --env CartPole-v1 --batch_size 64 --dueling
 | Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
 | :---         |     :---      |          :--- |
 | Lunar Lander v2         |     ---      |          245.02 |
-| Lunar Lander v2         |     --with_PER      |          --- |
-| Lunar Lander v2         |     --dueling      |          --- |
+| Lunar Lander v2         |     --with_PER      |          99.027 |
+| Lunar Lander v2         |     --dueling      |          175.917 |
 
 ### Arguments
 
