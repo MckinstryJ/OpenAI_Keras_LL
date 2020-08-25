@@ -2,6 +2,7 @@
 
 Modular Implementation of all known Reinforcement Learning algorithms in Keras (if needed):
 
+- [x] Randomized Agent ([Random](https://github.com/MckinstryJ/OpenAI_RL#randomized-action-policy-random))
 - [x] Q Learning ([QL](https://github.com/MckinstryJ/OpenAI_RL#q-learning-ql))
 - [x] State Action Reward State Action ([SARSA](https://github.com/MckinstryJ/OpenAI_RL#state-action-reward-state-action-sarsa))
 - [x] Dynamic Q Learning ([DynaQ](https://github.com/MckinstryJ/OpenAI_RL#dynamic-q-learning-dynaq))
@@ -24,6 +25,21 @@ This implementation requires keras 2.1.6, as well as OpenAI gym.
 ``` bash
 $ pip install gym keras==2.1.6
 ```
+
+# Base Line Algorithm
+### Randomized Action Policy (Random)
+The Randomized Action Policy algorithm is a method that takes a randomized action at every step. This model doesn't look at what state its in, what reward that state-action pair produced, or anything else. The creation of this model is to validate the effectiveness of the algorithms below. There are a few ways this model can help validate the others. For example, does the compairing model have a more stable reward over time? Does it appear to be consistantly improving?
+
+#### Running
+Running this algorithm with the full args is shown below:
+```bash
+$ python3 main.py --type Random --env LunarLander-v2 --plot --render
+```
+
+#### Results
+| Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
+| :---         |     :---      |          :--- |
+| Lunar Lander v2         |     -     |          -177 |
 
 # Tabular Algorithms
 ### Q Learning (QL)
