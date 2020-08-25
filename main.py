@@ -21,6 +21,7 @@ from DoubleQ.dq import DOUBLEQ
 from DelayQ.delayq import DELAYQ
 from AC.ac import ActorCritic
 from E3.e3 import E3
+from Random.rand import Random
 
 import keras.backend.tensorflow_backend as K
 
@@ -90,7 +91,7 @@ def main(args=None):
         action_dim = action_space.n
         act_range = action_space.n
     elif args.type in ["QL", "SARSA", "DynaQ", "DoubleQ",
-                       "DelayQ", "AC", "E3"]:
+                       "DelayQ", "AC", "E3", "Random"]:
         env = gym.make(args.env)
         state_dim = env.observation_space.shape[0]
         action_dim = env.action_space.n
@@ -116,6 +117,8 @@ def main(args=None):
         algo = ActorCritic(action_dim, state_dim, args)
     elif args.type == "E3":
         algo = E3(action_dim, state_dim, args)
+    elif args.type == "Random":
+        algo = Random(action_dim, state_dim, args)
     elif args.type == "DQN":
         algo = DQN(action_dim, state_dim, args)
     elif args.type == "DDQN":
@@ -129,7 +132,7 @@ def main(args=None):
 
     # Train
     if args.type in ["QL", "SARSA", "DynaQ", "DoubleQ",
-                     "DelayQ", "E3"]:
+                     "DelayQ", "E3", "Random"]:
         stats = algo.train(env, args)
     else:
         stats = algo.train(env, args, summary_writer)
@@ -152,7 +155,7 @@ def main(args=None):
         args.batch_size)
 
     if args.type in ["QL", "SARSA", "DynaQ", "DoubleQ",
-                     "DelayQ", "E3"]:
+                     "DelayQ", "E3", "Random"]:
         algo.save_tab()
     else:
         algo.save_weights(export_path)
