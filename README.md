@@ -39,7 +39,7 @@ $ python3 main.py --type Random --env LunarLander-v2 --plot --render
 #### Results
 | Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
 | :---         |     :---      |          :--- |
-| Lunar Lander v2         |     -     |          -177 |
+| Lunar Lander v2         |     -     |          -184.57 +/- (3.29) |
 
 # Tabular Algorithms
 ### Q Learning (QL)
