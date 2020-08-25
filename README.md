@@ -43,13 +43,20 @@ $ python3 main.py --type Random --env LunarLander-v2 --plot --render
 
 # Tabular Algorithms
 ### Q Learning (QL)
-The Q Learning algorithm is a off-policy method that stores its state-action-rewards in a matrix. The states (for most) come in as continuous so to convert them to discrete numbers, which is used as the index in its reward matrix, the transformation is: 
+The Q Learning algorithm is a off-policy method that stores its state-action-rewards in a matrix. 
+
+#### Data Transformation
+The states (for most) come in as continuous values, yet, to use the tabular structure, a transformation has to occur to convert the state into something discrete. One transformation is via modular function:
 
 ```python 
 int(value * 100) % self.groups
 ``` 
 
-Where self.groups is the number of "bins". There is a major downside to this transformation, within a smaller grid, because the starting point could easily be seen as the ending point so the action an agent would take in the begining would be effected by what action is needed to gain the highest reward at the end. Still trying to figure out what would be better for these tabular based algorithms that isn't specific to one environment.
+Where self.groups is the number of "bins". There is a major downside to this transformation because the starting point could easily be seen as the ending point. In other words, the action an agent would take in the begining would be effected by what action is needed to gain the highest reward at the end. 
+
+Another transformation is via state to dictionary. The procedure is to convert each state element as a rounded value based on the number of episodes; then append the value to a string. The resulting string would specify the location in the dictionary and that location would hold the rewards for that state. This has produced significantly better results than the modular transformation.
+
+Both transformation are held in the utils/transforms.py file.
 
 #### Running
 Running this algorithm with the full args is shown below:
@@ -60,7 +67,8 @@ $ python3 main.py --type QL --env LunarLander-v2 --consecutive_frames 1 --plot -
 #### Results
 | Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
 | :---         |     :---      |          :--- |
-| Lunar Lander v2         |     --consecutive_frames 1      |          -273.138 |
+| Lunar Lander v2 (modular)         |     --consecutive_frames 1     |          -273.138 |
+| Lunar Lander v2 (dictionary)         |     --consecutive_frames 1     |          -118.689 |
 
 ### State Action Reward State Action (SARSA)
 The SARSA algorithm is an on-policy method that also stores its state-action-rewards in a matrix. The difference between on-policy vs off-policy is whether or not the agent looks at the current policy to determine its discounted reward or some other method (i.e. greedy) 
