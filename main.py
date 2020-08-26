@@ -76,12 +76,12 @@ def main(args=None):
         summary_writer = K.tf.summary.FileWriter(args.type + "/tensorboard_" + args.env)
 
     # Environment Initialization
-    if(args.is_atari):
+    if args.is_atari:
         # Atari Environment Wrapper
         env = AtariEnvironment(args)
         state_dim = env.get_state_size()
         action_dim = env.get_action_size()
-    elif(args.type=="DDPG"):
+    elif args.type== "DDPG":
         # Continuous Environments Wrapper
         env = Environment(gym.make(args.env), args.consecutive_frames)
         env.reset()
