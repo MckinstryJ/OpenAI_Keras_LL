@@ -9,6 +9,7 @@
 from random import random, randrange
 import numpy as np
 from utils.stats import gather_stats
+from utils.transforms import *
 
 import matplotlib.pyplot as plt
 import pyformulas as pf
@@ -19,6 +20,7 @@ class E3(object):
         self.state_dim = state_space
         self.action_dim = action_space
         self.groups = group
+        self.nb_epi = args.nb_episodes
 
         self.gamma = .995
         self.lr = 0.01
@@ -33,8 +35,8 @@ class E3(object):
         shap = [self.groups for i in range(self.state_dim)]
         shap.append(self.action_dim)
         shap = tuple(shap)
-        self.Q = np.zeros(shape=shap)
-        self.B = np.zeros(shape=shap)
+        self.Q = {}
+        self.B = {}
 
         # Live Plot Update
         if args.plot:
@@ -42,39 +44,21 @@ class E3(object):
             canvas = np.zeros((480, 640))
             self.screen = pf.screen(canvas, "Agent")
 
-    def discrete_state(self, s):
-        values = []
-        for i in range(len(s)):
-            values.append(int(s[i] * 100) % self.groups)
-        return values
-
-    def continous_2_discrete(self, obj, obs):
-        """
-            Convert Observation to Discrete
-        :param obj: table in question (either Q table or Number of Visits table)
-        :param obs: env state
-        :return: transformed obs
-        """
-
-        location = obj
-        for i in range(len(obs)):
-            value = int(obs[i] * 100) % self.groups
-            location = location[value]
-        return location
-
     def policy_action(self, s):
         """ Apply an espilon-greedy policy to pick next action
         """
         if random() <= self.epsilon:
             return randrange(self.action_dim)
         else:
-            return np.argmax(self.continous_2_discrete(self.Q, s))
+            obs = continuous_2_dict(self.Q, s, self.nb_epi, self.action_dim)
+            return np.argmax(self.Q[obs])
 
     def update(self, action, obs, next_obs, reward):
-        obs = self.continous_2_discrete(self.Q, obs)
-        next_obs = self.continous_2_discrete(self.Q, next_obs)
+        obs = continuous_2_dict(self.Q, obs, self.nb_epi, self.action_dim)
+        next_obs = continuous_2_dict(self.Q, next_obs, self.nb_epi, self.action_dim)
 
-        obs[action] = (1 - self.lr) * obs[action] + self.lr * (reward + self.gamma * max(next_obs))
+        self.Q[obs][action] = (1 - self.lr) * self.Q[obs][action] \
+                              + self.lr * (reward + self.gamma * max(self.Q[next_obs]))
 
     def train(self, env, args):
         '''
@@ -106,13 +90,13 @@ class E3(object):
                         self.screen.update(image)
 
                 # If state is not in N, "balanced wandering" till all seen X times
-                s = self.discrete_state(old_state)
-                if s not in self.N:
-                    bal = self.continous_2_discrete(self.B, old_state)
-                    lowest = np.argmin(bal)
-                    bal[lowest] += 1
-                    if bal[lowest] >= self.X:
-                        self.N.append(s)
+                old_s = continuous_2_dict(self.Q, old_state, self.nb_epi, self.action_dim)
+                if old_s not in self.N:
+                    obs = continuous_2_dict(self.B, old_state, self.nb_epi, self.action_dim)
+                    lowest = np.argmin(self.B[obs])
+                    self.B[obs][lowest] += 1
+                    if self.B[obs][lowest] >= self.X:
+                        self.N.append(old_s)
                     a = lowest
                 else:
                     a = self.policy_action(old_state)
