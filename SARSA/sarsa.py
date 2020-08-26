@@ -1,6 +1,7 @@
 from random import random, randrange
 import numpy as np
 from utils.stats import gather_stats
+from utils.transforms import *
 
 import matplotlib.pyplot as plt
 import pyformulas as pf
@@ -11,6 +12,7 @@ class SARSA(object):
         self.state_dim = state_space
         self.action_dim = action_space
         self.groups = group
+        self.nb_epi = args.nb_episodes
 
         self.gamma = .995
         self.lr = 0.01
@@ -23,7 +25,7 @@ class SARSA(object):
         shap = [self.groups for i in range(self.state_dim)]
         shap.append(self.action_dim)
         shap = tuple(shap)
-        self.Q = np.zeros(shape=shap)
+        self.Q = {}
 
         # Live Plot Update
         if args.plot:
@@ -31,33 +33,21 @@ class SARSA(object):
             canvas = np.zeros((480, 640))
             self.screen = pf.screen(canvas, "Agent")
 
-    def continous_2_descrete(self, obs):
-        """
-            Convert Observation to Discrete
-        :param obs: env state
-        :return: transformed obs
-        """
-
-        location = self.Q
-        for i in range(len(obs)):
-            value = int(obs[i] * 100) % self.groups
-            location = location[value]
-
-        return location
-
     def policy_action(self, s):
         """ Apply an espilon-greedy policy to pick next action
         """
         if random() <= self.epsilon:
             return randrange(self.action_dim)
         else:
-            return np.argmax(self.continous_2_descrete(s))
+            obs = continuous_2_dict(self.Q, s, self.nb_epi, self.action_dim)
+            return np.argmax(self.Q[obs])
 
-    def update(self, a, new_a, state, new_state, r):
-        state = self.continous_2_descrete(state)
-        new_state = self.continous_2_descrete(new_state)
+    def update(self, action, new_a, obs, next_obs, reward):
+        obs = continuous_2_dict(self.Q, obs, self.nb_epi, self.action_dim)
+        next_obs = continuous_2_dict(self.Q, next_obs, self.nb_epi, self.action_dim)
 
-        state[a] = (1 - self.lr) * state[a] + self.lr * (r + self.gamma * new_state[new_a])
+        self.Q[obs][action] = (1 - self.lr) * self.Q[obs][action] \
+                              + self.lr * (reward + self.gamma * self.Q[next_obs][new_a])
 
     def train(self, env, args):
         results = []
@@ -73,7 +63,7 @@ class SARSA(object):
                 if args.render and epoch % 100 == 0:
                     env.render()
                     if args.plot and time == 0:
-                        plt.title("QL - Running Reward")
+                        plt.title("SARSA - Running Reward")
                         plt.ylabel("Reward")
                         plt.plot([np.average(rew[i:i + 100]) for i in range(len(rew) - 100)])
                         self.fig.canvas.draw()

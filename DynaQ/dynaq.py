@@ -1,6 +1,7 @@
 from random import random, randrange, choice
 import numpy as np
 from utils.stats import gather_stats
+from utils.transforms import *
 
 import matplotlib.pyplot as plt
 import pyformulas as pf
@@ -11,6 +12,7 @@ class DYNAQ(object):
         self.state_dim = state_space
         self.action_dim = action_space
         self.groups = group
+        self.nb_epi = args.nb_episodes
 
         self.gamma = .995
         self.lr = 0.01
@@ -23,7 +25,7 @@ class DYNAQ(object):
         shap = [self.groups for i in range(self.state_dim)]
         shap.append(self.action_dim)
         shap = tuple(shap)
-        self.Q = np.zeros(shape=shap)
+        self.Q = {}
 
         # Memory for Halu
         self.M = []
@@ -37,43 +39,30 @@ class DYNAQ(object):
             canvas = np.zeros((480, 640))
             self.screen = pf.screen(canvas, "Agent")
 
-    def continous_2_descrete(self, obs):
-        """
-            Convert Observation to Discrete
-        :param obs: env state
-        :return: transformed obs
-        """
-
-        location = self.Q
-        for i in range(len(obs)):
-            value = int(obs[i] * 100) % self.groups
-            location = location[value]
-
-        return location
-
     def policy_action(self, s):
         """ Apply an espilon-greedy policy to pick next action
         """
         if random() <= self.epsilon:
             return randrange(self.action_dim)
         else:
-            return np.argmax(self.continous_2_descrete(s))
+            obs = continuous_2_dict(self.Q, s, self.nb_epi, self.action_dim)
+            return np.argmax(self.Q[obs])
 
     def update(self, action, obs, next_obs, reward, last=None, halu=False):
-        q_obs = self.continous_2_descrete(obs)
-        q_next_obs = self.continous_2_descrete(next_obs)
-
         if not halu:
-            q_obs[action] = (1 - self.lr) * q_obs[action] + self.lr * (
-                    reward + self.gamma * max(q_next_obs))
+            obs = continuous_2_dict(self.Q, obs, self.nb_epi, self.action_dim)
+            next_obs = continuous_2_dict(self.Q, next_obs, self.nb_epi, self.action_dim)
+
+            self.Q[obs][action] = (1 - self.lr) * self.Q[obs][action] \
+                                  + self.lr * (reward + self.gamma * max(self.Q[next_obs]))
             self.M.append([action, obs, next_obs, reward, 0, True])
         elif halu and self.plus:
             bonus_reward = reward + self.k * np.sqrt(last)
-            q_obs[action] = (1 - self.lr) * q_obs[action] + self.lr * (
-                        bonus_reward + self.gamma * max(q_next_obs))
+            self.Q[obs][action] = (1 - self.lr) * self.Q[obs][action] \
+                                  + self.lr * (bonus_reward + self.gamma * max(self.Q[next_obs]))
         elif halu:
-            q_obs[action] = (1 - self.lr) * q_obs[action] + self.lr * (
-                        self.gamma * max(q_next_obs))
+            self.Q[obs][action] = (1 - self.lr) * self.Q[obs][action] \
+                                  + self.lr * (reward + self.gamma * max(self.Q[next_obs]))
 
     def train(self, env, args):
         results = []
