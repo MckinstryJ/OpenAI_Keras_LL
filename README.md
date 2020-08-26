@@ -82,7 +82,8 @@ $ python3 main.py --type SARSA --env LunarLander-v2 --consecutive_frames 1 --plo
 #### Results
 | Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
 | :---         |     :---      |          :--- |
-| Lunar Lander v2         |     --consecutive_frames 1      |          -251.316 |
+| Lunar Lander v2 (modular)         |     --consecutive_frames 1      |          -251.316 |
+| Lunar Lander v2 (dictionary)         |     --consecutive_frames 1      |          -169.501 |
 
 ### Dynamic Q Learning (DynaQ)
 The Dynamic Q Learning algorithm is an off-policy tabular method that introduces the idea of hallucinations. Before DynaQ, an agent would have to directly interact with the environment to gain insight on what it needs to do next. With hallucinations, however, the agent can revisit states to reinforce the action that produced the given reward.
@@ -103,8 +104,10 @@ $ python3 main.py --type DynaQ --env LunarLander-v2 --consecutive_frames 1 --plo
 #### Results
 | Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
 | :---         |     :---      |          :--- |
-| Lunar Lander v2         |     --consecutive_frames 1      |          -250.724 |
-| Lunar Lander v2         |     --consecutive_frames 1 --plus      |          -144.569 |
+| Lunar Lander v2 (modular)         |     --consecutive_frames 1      |          -250.724 |
+| Lunar Lander v2 (dictionary)         |     --consecutive_frames 1      |          -177.43 |
+| Lunar Lander v2 (modular)         |     --consecutive_frames 1 --plus      |          -144.569 |
+| Lunar Lander v2 (dictionary)         |     --consecutive_frames 1 --plus      |          -127.115 |
 
 ### Explicit Explore Exploit (E3)
 The E3 algorithm is an off-policy tabular method where the agent will first perform "balanced-wandering" (each action has been selected the same amount) until all actions, in that state, have been selected N times. Once all actions have been selected N times, the state will move into a new list where the standard Q learning method applies. This gives the appearance of explicit exploration and explicit exploitation.
@@ -118,7 +121,8 @@ $ python3 main.py --type E3 --env LunarLander-v2 --consecutive_frames 1 --plot -
 #### Results
 | Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
 | :---         |     :---      |          :--- |
-| Lunar Lander v2         |     --consecutive_frames 1      |          -185.092 |
+| Lunar Lander v2 (modular)         |     --consecutive_frames 1      |          -185.092 |
+| Lunar Lander v2 (dictionary)         |     --consecutive_frames 1      |          -204.665 |
 
 ### Delay Q Learning (DelayQ)
 The Delay Q Learning algorithm (aka PAC-MDP) is an off-policy method that acts greedy unless it considers an update based on whether or not the reinforced reward is:
@@ -153,7 +157,8 @@ $ python3 main.py --type DoubleQ --env LunarLander-v2 --consecutive_frames 1 --p
 #### Results
 | Environment &nbsp; &nbsp; &nbsp; &nbsp; | Specific Args | Score |
 | :---         |     :---      |          :--- |
-| Lunar Lander v2         |     --consecutive_frames 1      |          -189.879 |
+| Lunar Lander v2 (modular)         |     --consecutive_frames 1      |          -189.879 |
+| Lunar Lander v2 (dictionary)         |     --consecutive_frames 1      |          -154.877 |
 
 # Actor-Critic Algorithms
 ### Actor Critic (AC)
