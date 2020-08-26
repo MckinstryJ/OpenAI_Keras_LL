@@ -1,6 +1,7 @@
 from random import random, randrange
 import numpy as np
 from utils.stats import gather_stats
+from utils.transforms import *
 
 import matplotlib.pyplot as plt
 import pyformulas as pf
@@ -11,6 +12,7 @@ class DOUBLEQ(object):
         self.state_dim = state_space
         self.action_dim = action_space
         self.groups = group
+        self.nb_epi = args.nb_episodes
 
         self.gamma = .995
         self.lr = 0.01
@@ -23,8 +25,8 @@ class DOUBLEQ(object):
         shap = [self.groups for i in range(self.state_dim)]
         shap.append(self.action_dim)
         shap = tuple(shap)
-        self.Qa = np.zeros(shape=shap)
-        self.Qb = np.zeros(shape=shap)
+        self.Qa = {}
+        self.Qb = {}
 
         # Live Plot Update
         if args.plot:
@@ -32,40 +34,33 @@ class DOUBLEQ(object):
             canvas = np.zeros((480, 640))
             self.screen = pf.screen(canvas, "Agent")
 
-    def continous_2_descrete(self, Q, obs):
-        """
-            Convert Observation to Discrete
-        :param obs: env state
-        :return: transformed obs
-        """
-
-        location = Q
-        for i in range(len(obs)):
-            value = int(obs[i] * 100) % self.groups
-            location = location[value]
-
-        return location
-
     def policy_action(self, s):
-        """ Apply an espilon-greedy policy to pick next action
+        """ Apply an epsilon-greedy policy to pick next action
         """
-        actions_a = self.continous_2_descrete(self.Qa, s)
-        actions_b = self.continous_2_descrete(self.Qb, s)
-        if max(actions_a) < max(actions_b):
-            return np.argmax(actions_b)
-        return np.argmax(actions_a)
+        obs_a = continuous_2_dict(self.Qa, s, self.nb_epi, self.action_dim)
+        obs_b = continuous_2_dict(self.Qb, s, self.nb_epi, self.action_dim)
+        if max(self.Qa[obs_a]) < max(self.Qb[obs_b]):
+            return np.argmax(self.Qb[obs_b])
+        return np.argmax(self.Qa[obs_a])
 
     def update(self, Q, action, obs, next_obs, reward):
         if Q == 0:
-            a_star = np.argmax(self.continous_2_descrete(self.Qa, next_obs))
-            Qa = self.continous_2_descrete(self.Qa, obs)
-            Qb = self.continous_2_descrete(self.Qb, next_obs)
-            Qa[action] = Qa[action] + self.lr * (reward + self.gamma * Qb[a_star] - Qa[action])
+            a_star_obs = continuous_2_dict(self.Qa, next_obs, self.nb_epi, self.action_dim)
+            a_star = np.argmax(self.Qa[a_star_obs])
+
+            obs_a = continuous_2_dict(self.Qa, obs, self.nb_epi, self.action_dim)
+            obs_b = continuous_2_dict(self.Qb, next_obs, self.nb_epi, self.action_dim)
+            self.Qa[obs_a][action] = self.Qa[obs_a][action] + self.lr \
+                                   * (reward + self.gamma * self.Qb[obs_b][a_star] - self.Qa[obs_a][action])
         else:
-            b_star = np.argmax(self.continous_2_descrete(self.Qb, next_obs))
-            Qb = self.continous_2_descrete(self.Qa, obs)
-            Qa = self.continous_2_descrete(self.Qb, next_obs)
-            Qb[action] = Qb[action] + self.lr * (reward + self.gamma * Qa[b_star] - Qb[action])
+            b_star_obs = continuous_2_dict(self.Qb, next_obs, self.nb_epi, self.action_dim)
+            b_star = np.argmax(self.Qb[b_star_obs])
+
+            obs_b = continuous_2_dict(self.Qb, obs, self.nb_epi, self.action_dim)
+            obs_a = continuous_2_dict(self.Qa, next_obs, self.nb_epi, self.action_dim)
+
+            self.Qb[obs_b][action] = self.Qb[obs_b][action] + self.lr \
+                                     * (reward + self.gamma * self.Qa[obs_a][b_star] - self.Qb[obs_b][action])
 
     def train(self, env, args):
         results = []

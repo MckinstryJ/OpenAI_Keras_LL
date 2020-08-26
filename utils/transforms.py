@@ -1,3 +1,5 @@
+import numpy as np
+
 def continuous_2_descrete(obj, obs, groups):
     """
         Convert Observation to Discrete
@@ -27,7 +29,7 @@ def continuous_2_dict(obj, obs, nb_epi, action_dim):
     location = obj
     value = ""
     for i in range(len(obs)):
-        value += str(round(obs[i] * (nb_epi / 1000.), 0))
+        value += str(round(obs[i] * np.log(nb_epi), 0))
     try:
         location = location[value]
     except KeyError:

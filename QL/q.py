@@ -34,7 +34,7 @@ class QL(object):
             self.screen = pf.screen(canvas, "Agent")
 
     def policy_action(self, s):
-        """ Apply an espilon-greedy policy to pick next action
+        """ Apply an epsilon-greedy policy to pick next action
         """
         if random() <= self.epsilon:
             return randrange(self.action_dim)
