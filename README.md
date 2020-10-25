@@ -21,9 +21,20 @@ Modular Implementation of all known Reinforcement Learning algorithms in Keras (
 
 ## Getting Started
 
-This implementation requires keras 2.1.6, as well as OpenAI gym.
+Setup your environment automatically with this:
 ``` bash
-$ pip install gym keras==2.1.6
+$ conda create --name gymEnv --file spec-list.txt
+```
+Afterwards, switch you environment to gymEnv before running. Then do the following:
+- Install [MS Visual C++ 14.0 (Build Tools for Visual Studio)](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+``` bash
+$ pip install gym
+$ pip install pandas
+$ pip install tqdm
+$ pip install keras==2.2.4
+$ pip install matplotlib
+$ pip install pyformulas
+$ pip install Box2D
 ```
 
 # Base Line Algorithm
@@ -129,7 +140,7 @@ The Delay Q Learning algorithm (aka PAC-MDP) is an off-policy method that acts g
 ```python
 Q[s,a] - U[s,a] / m >= 2 * e
 ```
-Where U is the table for attempted updates and e is a defined value which is the sample complexity of exploration. This is considered as a PAC-MDP because the sample complexity is of the algorithm is less than some polynomial (specified in its paper). 
+Where U is the table for attempted updates and e is a defined value which is the sample complexity of exploration. This is considered as a PAC-MDP because the sample complexity, of the algorithm, is less than some polynomial (specified in its paper). 
 
 #### Running
 Running this algorithm with the full args is shown below:
