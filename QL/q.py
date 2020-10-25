@@ -27,6 +27,8 @@ class QL(object):
         shap = tuple(shap)
         self.Q = {}
 
+        self.T = Transforms(self.nb_epi, self.action_dim)
+
         # Live Plot Update
         if args.plot:
             self.fig = plt.figure()
@@ -39,7 +41,7 @@ class QL(object):
         if random() <= self.epsilon:
             return randrange(self.action_dim)
         else:
-            obs = continuous_2_dict(self.Q, s, self.nb_epi, self.action_dim)
+            obs = self.T.continuous_2_dict(self.Q, s, self.nb_epi, self.action_dim)
             return np.argmax(self.Q[obs])
 
     def update(self, action, obs, next_obs, reward):

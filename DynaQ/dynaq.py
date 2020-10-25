@@ -27,6 +27,8 @@ class DYNAQ(object):
         shap = tuple(shap)
         self.Q = {}
 
+        self.T = Transforms(self.nb_epi, self.action_dim)
+
         # Memory for Halu
         self.M = []
         # Default or Plus
@@ -45,13 +47,13 @@ class DYNAQ(object):
         if random() <= self.epsilon:
             return randrange(self.action_dim)
         else:
-            obs = continuous_2_dict(self.Q, s, self.nb_epi, self.action_dim)
+            obs = self.T.continuous_2_dict(self.Q, s)
             return np.argmax(self.Q[obs])
 
     def update(self, action, obs, next_obs, reward, last=None, halu=False):
         if not halu:
-            obs = continuous_2_dict(self.Q, obs, self.nb_epi, self.action_dim)
-            next_obs = continuous_2_dict(self.Q, next_obs, self.nb_epi, self.action_dim)
+            obs = self.T.continuous_2_dict(self.Q, obs)
+            next_obs = self.T.continuous_2_dict(self.Q, next_obs)
 
             self.Q[obs][action] = (1 - self.lr) * self.Q[obs][action] \
                                   + self.lr * (reward + self.gamma * max(self.Q[next_obs]))
